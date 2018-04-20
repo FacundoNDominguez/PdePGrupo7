@@ -26,37 +26,37 @@ testear = hspec $ do
 
 test1 = it "La billetera deberia quedar en 20, luego de depositar 10"  (  (billetera.deposito 10) pepe `shouldBe` 20 )
 
-test2 = it "La billetera deberia quedar en 7, luego de extraer 3" ( (billetera.extracción 3)  pepe `shouldBe` 7)
+test2 = it "La billetera deberia quedar en 7, luego de extraer 3" ( (billetera.extracción 3) pepe `shouldBe` 7)
 
-test3 = it "La billetera deberia quedar en 0, luego de extraer 15" ( ( billetera.extracción 15)  pepe `shouldBe` 0)
+test3 = it "La billetera deberia quedar en 0, luego de extraer 15" (  (billetera.extracción 15) pepe `shouldBe` 0)
 
 test4 = it "La billetera deberia quedar en 12, luego de un upgrade" ( ( billetera.upgrade) pepe `shouldBe` 12)
 
-test5 = it "La billetera deberia quedar en 0, luego de cerrar cuenta" (  (billetera.cierreDeCuenta ) pepe `shouldBe` 0)
+test5 = it "La billetera deberia quedar en 0, luego de cerrar cuenta" (  (billetera.cierreDeCuenta) pepe `shouldBe` 0)
 
-test6 = it "La billetera deberia quedar en 10, si no se hace nada" ( ( billetera.quedaIgual $ pepe )`shouldBe` 10)
+test6 = it "La billetera deberia quedar en 10, si no se hace nada" ( ( billetera.quedaIgual) pepe `shouldBe` 10)
 
-test7 = it "La billetera deberia quedar en 1020, luego de depositar 1000 y hacer un upgrade" ( ( billetera.upgrade.(deposito 1000) $ pepe )`shouldBe` 1020)
+test7 = it "La billetera deberia quedar en 1020, luego de depositar 1000 y hacer un upgrade" (  (billetera.upgrade.deposito 1000) pepe`shouldBe` 1020)
 
 test8 = it "La billetera de pepe esta en 10" (billetera pepe `shouldBe` 10)
 
-test9 = it "la Billetera de Pepe queda en 0, luego de un cierre de cuenta" (( billetera.cierreDeCuenta $ pepe ) `shouldBe` 0)
+test9 = it "la Billetera de Pepe queda en 0, luego de un cierre de cuenta" ( (billetera.cierreDeCuenta) pepe `shouldBe` 0)
 
-test10 = it "La billetera deberia quedar en 27.6, luego de depositar 15, extraer 2 y hacer un upgrade" ( ( billetera.upgrade.(extracción 2).(deposito 15) $ pepe )`shouldBe` 27.6)
+test10 = it "La billetera deberia quedar en 27.6, luego de depositar 15, extraer 2 y hacer un upgrade" ( ( billetera.upgrade.extracción 2.deposito 15 $ pepe )`shouldBe` 27.6)
 
-test11 = it "La billetera deberia quedar con el monto que se creo al usuario pepe" (((transaccion1) $ pepe) `shouldBe` pepe)
+test11 = it "La billetera deberia quedar con el monto que se creo al usuario pepe" ( transaccion1 pepe `shouldBe` pepe)
 
-test12 = it "La billetera de Pepe queda en 15, luego de depositar 5 monedas" (((transaccion2) $ pepe) `shouldBe` nuevoValorBilletera 15 pepe)
+test12 = it "La billetera de Pepe queda en 15, luego de depositar 5 monedas" (transaccion2  pepe `shouldBe` nuevoValorBilletera 15 pepe)
 
-test13 = it "La billetera de Pepe2 queda en 55, luego de depositar 5 monedas y depositar 5 a la nueva billetera que tenia 50 monedas" (((deposito 5.nuevoValorBilletera 50.deposito 5) $ pepe2) `shouldBe` nuevoValorBilletera 55 pepe2)
+test13 = it "La billetera de Pepe2 queda en 55, luego de depositar 5 monedas y depositar 5 a la nueva billetera que tenia 50 monedas" ( (deposito 5.nuevoValorBilletera 50.deposito 5 ) pepe2 `shouldBe` nuevoValorBilletera 55 pepe2)
 
-test14 = it "La billetera de Lucho queda en 0, luego de depositar 15, hacer un upgrade y cerrar la cuenta" (((transaccion3) $ lucho) `shouldBe` nuevoValorBilletera 0 lucho)
+test14 = it "La billetera de Lucho queda en 0, luego de depositar 15, hacer un upgrade y cerrar la cuenta" (transaccion3 lucho `shouldBe` nuevoValorBilletera 0 lucho)
 
-test15 = it "La billetera de Lucho2 queda en 34, luego de depositar 1 moneda, luego depositar 2, extraer 1, depositar 8, tener un upgrade, y depositar 10." (((transaccion4) $ lucho2) `shouldBe` nuevoValorBilletera 34 lucho2)
+test15 = it "La billetera de Lucho2 queda en 34, luego de depositar 1 moneda, luego depositar 2, extraer 1, depositar 8, tener un upgrade, y depositar 10." (transaccion4 lucho2 `shouldBe` nuevoValorBilletera 34 lucho2)
 
-test16 = it "La billetera de Pepe queda en 3, luego de extraer 7 monedas" (((transaccion5) $ pepe) `shouldBe` nuevoValorBilletera 3 pepe)
+test16 = it "La billetera de Pepe queda en 3, luego de extraer 7 monedas" (transaccion5 pepe `shouldBe` nuevoValorBilletera 3 pepe)
 
-test17 = it "La billetera de Lucho2 queda en 17, luego de depositar 7 monedas" ((transaccion5 lucho2) `shouldBe` nuevoValorBilletera 17 lucho2)
+test17 = it "La billetera de Lucho2 queda en 17, luego de depositar 7 monedas" (transaccion5 lucho2 `shouldBe` nuevoValorBilletera 17 lucho2)
 
 {-
 	testN = it "QueTestea" (EstoEjecuta `shouldBe` Resultado)
@@ -118,9 +118,9 @@ tocoYMeVoy  = cierreDeCuenta.upgrade.deposito 15
 
 ahorranteErrante :: Transaccion
 
-ahorranteErrante  = (deposito 10).upgrade.(deposito 8).(extracción 1).(deposito 2).deposito 1
+ahorranteErrante  = deposito 10.upgrade.deposito 8.extracción 1.deposito 2.deposito 1
 
-
+{-
 
 transaccion :: Int -> Transaccion
 
@@ -135,7 +135,7 @@ obtenerOperacion n usuario 	| n == 1 && validarUsuario "Luciano" usuario = cierr
 							| n == 5 && validarUsuario "Jose" usuario = extracción 7
 							| n == 5 && validarUsuario "Luciano" usuario = deposito 7
  							| otherwise = quedaIgual
-
+-}
 
 aplicarTransaccion usuario nombreUsuario transaccion | validarUsuario nombreUsuario usuario = transaccion usuario
 													 | otherwise = quedaIgual usuario
@@ -148,9 +148,8 @@ transaccion3 usuario = aplicarTransaccion usuario "Luciano" tocoYMeVoy
 
 transaccion4 usuario = aplicarTransaccion usuario "Luciano" ahorranteErrante
 
-transaccion5 usuario = aplicarTransaccion usuario "Jose" (extracción 7)
-
-transaccion5 usuario = aplicarTransaccion usuario "Luciano" (deposito 7)
+transaccion5 usuario | nombre usuario == "Jose" = aplicarTransaccion usuario "Jose" (extracción 7)
+					 | nombre usuario == "Luciano" = aplicarTransaccion usuario "Luciano" (deposito 7)
 
 validarUsuario :: ValidacionUsuario
 
