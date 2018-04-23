@@ -6,23 +6,23 @@ import Test.Hspec
 
 --TESTS--
 testear = hspec $ do
-	test1
-	test2
-	test3
-	test4
-	test5
-	test6
-	test7
-	test8
-	test9
-	test10
-	test11
-	test12
-	test13
-	test14
-	test15
-	test16
-	test17
+    test1
+    test2
+    test3
+    test4
+    test5
+    test6
+    test7
+    test8
+    test9
+    test10
+    test11
+    test12
+    test13
+    test14
+    test15
+    test16
+    test17
 
 test1 = it "La billetera deberia quedar en 20, luego de depositar 10"  (  (billetera.deposito 10) pepe `shouldBe` 20 )
 
@@ -59,7 +59,7 @@ test16 = it "La billetera de Pepe queda en 3, luego de extraer 7 monedas" (trans
 test17 = it "La billetera de Lucho2 queda en 17, luego de depositar 7 monedas" (transaccion5 lucho2 `shouldBe` nuevoValorBilletera 17 lucho2)
 
 {-
-	testN = it "QueTestea" (EstoEjecuta `shouldBe` Resultado)
+    testN = it "QueTestea" (EstoEjecuta `shouldBe` Resultado)
 -}
 
 data Usuario = UnUsuario {
@@ -128,28 +128,28 @@ transaccion numeroDeTransaccion usuario = (obtenerOperacion numeroDeTransaccion 
 
 obtenerOperacion :: Int -> Usuario -> Transaccion
 
-obtenerOperacion n usuario 	| n == 1 && validarUsuario "Luciano" usuario = cierreDeCuenta
-							| n == 2 && validarUsuario "Jose" usuario = deposito 5
-							| n == 3 && validarUsuario "Luciano" usuario = tocoYMeVoy
-							| n == 4 && validarUsuario "Luciano" usuario = ahorranteErrante
-							| n == 5 && validarUsuario "Jose" usuario = extracción 7
-							| n == 5 && validarUsuario "Luciano" usuario = deposito 7
- 							| otherwise = quedaIgual
+obtenerOperacion n usuario     | n == 1 && validarUsuario "Luciano" usuario = cierreDeCuenta
+                            | n == 2 && validarUsuario "Jose" usuario = deposito 5
+                            | n == 3 && validarUsuario "Luciano" usuario = tocoYMeVoy
+                            | n == 4 && validarUsuario "Luciano" usuario = ahorranteErrante
+                            | n == 5 && validarUsuario "Jose" usuario = extracción 7
+                            | n == 5 && validarUsuario "Luciano" usuario = deposito 7
+                             | otherwise = quedaIgual
 -}
 
 aplicarTransaccion usuario nombreUsuario transaccion | validarUsuario nombreUsuario usuario = transaccion usuario
-													 | otherwise = quedaIgual usuario
+                                                     | otherwise = quedaIgual usuario
 
 transaccion1 usuario = aplicarTransaccion usuario "Luciano" cierreDeCuenta
 
 transaccion2 usuario = aplicarTransaccion usuario "Jose" (deposito 5)
 
 transaccion3 usuario = aplicarTransaccion usuario "Luciano" tocoYMeVoy
-
+    
 transaccion4 usuario = aplicarTransaccion usuario "Luciano" ahorranteErrante
 
 transaccion5 usuario | nombre usuario == "Jose" = aplicarTransaccion usuario "Jose" (extracción 7)
-					 | nombre usuario == "Luciano" = aplicarTransaccion usuario "Luciano" (deposito 7)
+                     | nombre usuario == "Luciano" = aplicarTransaccion usuario "Luciano" (deposito 7)
 
 validarUsuario :: ValidacionUsuario
 
@@ -158,3 +158,32 @@ validarUsuario nombreUsuario usuario = (nombre usuario) == nombreUsuario
 --Funcion para hacer tests
 
 nuevoValorBilletera nuevoValor unUsuario= unUsuario {billetera = nuevoValor}
+
+
+
+{-
+
+ ___________  ______          _         _____                      
+|_   _| ___ \ | ___ \        | |       / __  \ _                   
+  | | | |_/ / | |_/ /_ _ _ __| |_ ___  `' / /'(_)                  
+  | | |  __/  |  __/ _` | '__| __/ _ \   / /                       
+  | | | |     | | | (_| | |  | ||  __/ ./ /___ _                   
+  \_/ \_|     \_|  \__,_|_|   \__\___| \_____/(_)                  
+                                                                   
+                                                                   
+ _             _   _                                           ___ 
+| |           | | | |                                         /   |
+| |     __ _  | | | | ___ _ __   __ _  __ _ _ __  ______ _   / /| |
+| |    / _` | | | | |/ _ \ '_ \ / _` |/ _` | '_ \|_  / _` | / /_| |
+| |___| (_| | \ \_/ /  __/ | | | (_| | (_| | | | |/ / (_| | \___  |
+\_____/\__,_|  \___/ \___|_| |_|\__, |\__,_|_| |_/___\__,_|     |_/
+                                 __/ |                             
+                                |___/                              
+
+
+-}
+
+bloque1 :: Usuario -> Usuario 
+
+bloque1 = (transaccion3.transaccion5.transaccion4.transaccion3.transaccion2.transaccion2.transaccion2.transaccion1)
+
