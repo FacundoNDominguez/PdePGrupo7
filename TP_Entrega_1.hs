@@ -83,7 +83,7 @@ lucho2 = UnUsuario "Luciano" 10
 
 deposito :: Dinero -> Transaccion
 
-deposito dineroADepositar usuario = nuevoValorBilletera (dineroADepositar + billetera usuario ) usuario 
+deposito dineroADepositar usuario = nuevoValorBilletera (dineroADepositar + billetera usuario ) usuario
 
 extracción :: Dinero -> Transaccion
 
@@ -145,7 +145,7 @@ transaccion1 usuario = aplicarTransaccion usuario "Luciano" cierreDeCuenta
 transaccion2 usuario = aplicarTransaccion usuario "Jose" (deposito 5)
 
 transaccion3 usuario = aplicarTransaccion usuario "Luciano" tocoYMeVoy
-    
+
 transaccion4 usuario = aplicarTransaccion usuario "Luciano" ahorranteErrante
 
 transaccion5 usuario | nombre usuario == "Jose" = aplicarTransaccion usuario "Jose" (extracción 7)
@@ -163,27 +163,38 @@ nuevoValorBilletera nuevoValor unUsuario= unUsuario {billetera = nuevoValor}
 
 {-
 
- ___________  ______          _         _____                      
-|_   _| ___ \ | ___ \        | |       / __  \ _                   
-  | | | |_/ / | |_/ /_ _ _ __| |_ ___  `' / /'(_)                  
-  | | |  __/  |  __/ _` | '__| __/ _ \   / /                       
-  | | | |     | | | (_| | |  | ||  __/ ./ /___ _                   
-  \_/ \_|     \_|  \__,_|_|   \__\___| \_____/(_)                  
-                                                                   
-                                                                   
- _             _   _                                           ___ 
+ ___________  ______          _         _____
+|_   _| ___ \ | ___ \        | |       / __  \ _
+  | | | |_/ / | |_/ /_ _ _ __| |_ ___  `' / /'(_)
+  | | |  __/  |  __/ _` | '__| __/ _ \   / /
+  | | | |     | | | (_| | |  | ||  __/ ./ /___ _
+  \_/ \_|     \_|  \__,_|_|   \__\___| \_____/(_)
+
+
+ _             _   _                                           ___
 | |           | | | |                                         /   |
 | |     __ _  | | | | ___ _ __   __ _  __ _ _ __  ______ _   / /| |
 | |    / _` | | | | |/ _ \ '_ \ / _` |/ _` | '_ \|_  / _` | / /_| |
 | |___| (_| | \ \_/ /  __/ | | | (_| | (_| | | | |/ / (_| | \___  |
 \_____/\__,_|  \___/ \___|_| |_|\__, |\__,_|_| |_/___\__,_|     |_/
-                                 __/ |                             
-                                |___/                              
+                                 __/ |
+                                |___/
 
 
 -}
 
-bloque1 :: Usuario -> Usuario 
+bloque1 :: Transaccion
 
 bloque1 = (transaccion3.transaccion5.transaccion4.transaccion3.transaccion2.transaccion2.transaccion2.transaccion1)
+
+testear2 = hspec $ do
+    test18
+    test19
+    test20
+
+test18 = it "Impactar la transacción 1 a Pepe. Debería quedar igual que como está inicialmente" (transaccion1 pepe `shouldBe` pepe)
+
+test19 = it "Impactar la transacción 5 a Lucho. Debería producir que Lucho tenga 9 monedas en su billetera" (transaccion5 lucho `shouldBe` (nuevoValorBilletera 9 lucho))
+
+test20 = it "Impactar la transacción 5 y luego la 2 a Pepe. Eso hace que tenga 8 en su billetera" ( (transaccion2.transaccion5)  pepe `shouldBe` (nuevoValorBilletera 8  pepe))
 
