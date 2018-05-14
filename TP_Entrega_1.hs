@@ -183,16 +183,22 @@ nuevoValorBilletera nuevoValor unUsuario= unUsuario {billetera = nuevoValor}
 
 -}
 
-bloque1 :: Transaccion
+type Bloque = [Transaccion]
 
-bloque1 = (transaccion3.transaccion5.transaccion4.transaccion3.transaccion2.transaccion2.transaccion2.transaccion1)
+bloque1 :: Bloque
+
+bloque1 = [transaccion3,transaccion5,transaccion4,transaccion3,transaccion2,transaccion2,transaccion2,transaccion1]
+
+formarBloque :: Bloque -> Transaccion
+formarBloque bloque = foldl1 (.) bloque
 
 testear2 = hspec $ do
     test18
     test19
     test20
     test21
-    --test22
+    test22
+    test23
 
 test18 = it "Impactar la transacción 1 a Pepe. Debería quedar igual que como está inicialmente" (transaccion1 pepe `shouldBe` pepe)
 
@@ -200,8 +206,21 @@ test19 = it "Impactar la transacción 5 a Lucho. Debería producir que Lucho ten
 
 test20 = it "Impactar la transacción 5 y luego la 2 a Pepe. Eso hace que tenga 8 en su billetera" ( (transaccion2.transaccion5)  pepe `shouldBe` (nuevoValorBilletera 8  pepe))
 
-test21 = it "Aplicar bloque1 a pepe. Esto hace que tenga 18 en su billetera" (bloque1 pepe `shouldBe` (nuevoValorBilletera 18 pepe))
+test21 = it "Aplicar bloque1 a pepe. Esto hace que tenga 18 en su billetera" (formarBloque bloque1 pepe `shouldBe` (nuevoValorBilletera 18 pepe))
 
---test22 = it "Aplicar bloque1 al conjuntos de usuarios [pepe,lucho] y determinar quien queda con mas creditos. Esto hace que quede pepe" ( saldoMayorA 10 [pepe,lucho] `shouldBe` pepe )
+test22 = it "Aplicar bloque1 al conjuntos de usuarios [pepe,lucho] y determinar quien queda con mas de 10 creditos. Esto hace que quede pepe" ( saldoMayorA 10 ( aplicarBloqueAUsuarios bloque1 [pepe,lucho] ) `shouldBe` [nuevoValorBilletera 18 pepe] )
 
-saldoMayorA numero = filter((<)numero.billetera.bloque1)
+test23 = it "Al aplicar el bloque 1 a pepe y lucho, lucho es el mas adinerado" ( usuarioMasAdinerado (aplicarBloqueAUsuarios bloque1 [pepe, lucho] ) `shouldBe` (nuevoValorBilletera 18 pepe) )
+
+aplicarBloqueAUsuarios :: Bloque -> [Usuario] -> [Usuario]
+aplicarBloqueAUsuarios bloque usuarios = map (formarBloque bloque) usuarios
+
+saldoMayorA :: Float -> [Usuario] -> [Usuario]
+saldoMayorA numero usuarios = filter ((>numero).billetera) usuarios
+
+billeteraMasCargada :: [Usuario] -> Float
+billeteraMasCargada usuarios = maximum (map billetera usuarios)
+
+usuarioMasAdinerado :: [Usuario] -> Usuario
+usuarioMasAdinerado usuarios = head $ filter ( (==billeteraMasCargada usuarios).billetera ) usuarios
+
