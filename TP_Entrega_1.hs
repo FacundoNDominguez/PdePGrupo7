@@ -183,15 +183,6 @@ nuevoValorBilletera nuevoValor unUsuario= unUsuario {billetera = nuevoValor}
 
 -}
 
-type Bloque = [Transaccion]
-
-bloque1 :: Bloque
-
-bloque1 = [transaccion3,transaccion5,transaccion4,transaccion3,transaccion2,transaccion2,transaccion2,transaccion1]
-
-formarBloque :: Bloque -> Transaccion
-formarBloque bloque = foldl1 (.) bloque
-
 testear2 = hspec $ do
     test18
     test19
@@ -200,6 +191,9 @@ testear2 = hspec $ do
     test22
     test23
     test24
+    --test25
+    test26
+    test27
 
 test18 = it "Impactar la transacción 1 a Pepe. Debería quedar igual que como está inicialmente" (transaccion1 pepe `shouldBe` pepe)
 
@@ -215,6 +209,20 @@ test23 = it "Al aplicar el bloque 1 a pepe y lucho, pepe es el mas adinerado" ( 
 
 test24 = it "Al aplicar el bloqie 1 a pepe y a lucho, lucho es el menos adinerado" ( usuarioMenosAdinerado (aplicarBloqueAUsuarios bloque1 [pepe, lucho] ) `shouldBe` (nuevoValorBilletera 0 lucho) )
 
+--test25 = it "de los bloques del blockchain el peor para pepe es el bloque 1" ( peorBloque pepe  `shouldBe` bloque1 )
+
+test26 = it "al aplicar el block chain a pepe, este queda con 115 monedas" ( formarBlockChain pepe  `shouldBe` (nuevoValorBilletera 115 pepe) )
+
+test27 = it "despues de la tercera iteracion del blockchain, pepe queda con 51 monedas" ( usuarioDespuesDeNBloques pepe 3 blockChain `shouldBe` (nuevoValorBilletera 51 pepe) )
+
+type Bloque = [Transaccion]
+
+bloque1 :: Bloque
+
+bloque1 = [transaccion3,transaccion5,transaccion4,transaccion3,transaccion2,transaccion2,transaccion2,transaccion1]
+
+formarBloque :: Bloque -> Transaccion
+formarBloque bloque = foldl1 (.) bloque
 
 aplicarBloqueAUsuarios :: Bloque -> [Usuario] -> [Usuario]
 aplicarBloqueAUsuarios bloque usuarios = map (formarBloque bloque) usuarios
@@ -234,3 +242,29 @@ billeteraMenosCargada usuarios = minimum (map billetera usuarios)
 usuarioMenosAdinerado :: [Usuario] -> Usuario
 usuarioMenosAdinerado usuarios = head $ filter ( (==billeteraMenosCargada usuarios).billetera ) usuarios
 
+type BlockChain = [Bloque]
+
+bloque2 :: Bloque
+bloque2 = [transaccion2,transaccion2,transaccion2,transaccion2,transaccion2]
+
+formarBlockChain :: Transaccion
+formarBlockChain = formarBloque (concat blockChain)
+
+blockChain :: BlockChain
+blockChain = [bloque2,bloque1,bloque1,bloque1,bloque1,bloque1,bloque1,bloque1,bloque1,bloque1,bloque1]
+
+aplicarTransaccionAUsuario :: Usuario -> Transaccion -> Usuario
+aplicarTransaccionAUsuario usuario transaccion = transaccion usuario
+
+evaluaraUsuarioPorBloque :: Usuario -> [Usuario]
+evaluaraUsuarioPorBloque usuario = map ( aplicarTransaccionAUsuario usuario ) (map (formarBloque) blockChain)
+
+verificarPeorBloque :: Usuario -> Bloque -> Bool
+verificarPeorBloque usuario bloque = (usuarioMenosAdinerado (evaluaraUsuarioPorBloque usuario) ) == (aplicarTransaccionAUsuario usuario (formarBloque bloque) )
+
+peorBloque :: Usuario -> Bloque
+peorBloque usuario = fromJust (find (verificarPeorBloque usuario) blockChain)
+
+usuarioDespuesDeNBloques usuario n (x:xs) | n==0 = usuario
+                                          | (length xs == 0 ) = (formarBloque x) usuario
+                                          | otherwise = usuarioDespuesDeNBloques ( (formarBloque x) usuario) (n-1) xs
