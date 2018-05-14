@@ -199,6 +199,7 @@ testear2 = hspec $ do
     test21
     test22
     test23
+    test24
 
 test18 = it "Impactar la transacción 1 a Pepe. Debería quedar igual que como está inicialmente" (transaccion1 pepe `shouldBe` pepe)
 
@@ -210,7 +211,10 @@ test21 = it "Aplicar bloque1 a pepe. Esto hace que tenga 18 en su billetera" (fo
 
 test22 = it "Aplicar bloque1 al conjuntos de usuarios [pepe,lucho] y determinar quien queda con mas de 10 creditos. Esto hace que quede pepe" ( saldoMayorA 10 ( aplicarBloqueAUsuarios bloque1 [pepe,lucho] ) `shouldBe` [nuevoValorBilletera 18 pepe] )
 
-test23 = it "Al aplicar el bloque 1 a pepe y lucho, lucho es el mas adinerado" ( usuarioMasAdinerado (aplicarBloqueAUsuarios bloque1 [pepe, lucho] ) `shouldBe` (nuevoValorBilletera 18 pepe) )
+test23 = it "Al aplicar el bloque 1 a pepe y lucho, pepe es el mas adinerado" ( usuarioMasAdinerado (aplicarBloqueAUsuarios bloque1 [pepe, lucho] ) `shouldBe` (nuevoValorBilletera 18 pepe) )
+
+test24 = it "Al aplicar el bloqie 1 a pepe y a lucho, lucho es el menos adinerado" ( usuarioMenosAdinerado (aplicarBloqueAUsuarios bloque1 [pepe, lucho] ) `shouldBe` (nuevoValorBilletera 0 lucho) )
+
 
 aplicarBloqueAUsuarios :: Bloque -> [Usuario] -> [Usuario]
 aplicarBloqueAUsuarios bloque usuarios = map (formarBloque bloque) usuarios
@@ -223,4 +227,10 @@ billeteraMasCargada usuarios = maximum (map billetera usuarios)
 
 usuarioMasAdinerado :: [Usuario] -> Usuario
 usuarioMasAdinerado usuarios = head $ filter ( (==billeteraMasCargada usuarios).billetera ) usuarios
+
+billeteraMenosCargada :: [Usuario] -> Float
+billeteraMenosCargada usuarios = minimum (map billetera usuarios)
+
+usuarioMenosAdinerado :: [Usuario] -> Usuario
+usuarioMenosAdinerado usuarios = head $ filter ( (==billeteraMenosCargada usuarios).billetera ) usuarios
 
