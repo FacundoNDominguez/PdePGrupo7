@@ -194,6 +194,7 @@ testear2 = hspec $ do
     --test25
     test26
     test27
+    test28
 
 test18 = it "Impactar la transacción 1 a Pepe. Debería quedar igual que como está inicialmente" (transaccion1 pepe `shouldBe` pepe)
 
@@ -213,7 +214,9 @@ test24 = it "Al aplicar el bloqie 1 a pepe y a lucho, lucho es el menos adinerad
 
 test26 = it "al aplicar el block chain a pepe, este queda con 115 monedas" ( formarBlockChain pepe  `shouldBe` (nuevoValorBilletera 115 pepe) )
 
-test27 = it "despues de la tercera iteracion del blockchain, pepe queda con 51 monedas" ( usuarioDespuesDeNBloques pepe 3 blockChain `shouldBe` (nuevoValorBilletera 51 pepe) )
+test27 = it "despues de la tercera iteracion del blockchain, pepe queda con 51 monedas" ( usuarioDespuesDeNBloques pepe blockChain 3 `shouldBe` (nuevoValorBilletera 51 pepe) )
+
+test28 = it "Despues de aplicar el block chain a lucho y a pepe, lucho queda con 0 monedas y pepe con 115" ( usuariosDespuesDelBlockChain [pepe,lucho] `shouldBe` [nuevoValorBilletera 115 pepe, nuevoValorBilletera 0 lucho])
 
 type Bloque = [Transaccion]
 
@@ -265,6 +268,19 @@ verificarPeorBloque usuario bloque = (usuarioMenosAdinerado (evaluaraUsuarioPorB
 peorBloque :: Usuario -> Bloque
 peorBloque usuario = fromJust (find (verificarPeorBloque usuario) blockChain)
 
-usuarioDespuesDeNBloques usuario n (x:xs) | n==0 = usuario
+usuarioDespuesDeNBloques usuario (x:xs) n | n==0 = usuario
                                           | (length xs == 0 ) = (formarBloque x) usuario
-                                          | otherwise = usuarioDespuesDeNBloques ( (formarBloque x) usuario) (n-1) xs
+                                          | otherwise = usuarioDespuesDeNBloques ( (formarBloque x) usuario) xs (n-1)
+
+usuariosDespuesDelBlockChain :: [Usuario] -> [Usuario]
+usuariosDespuesDelBlockChain usuarios = map (formarBlockChain) usuarios
+
+blockChainInfinito :: Bloque -> BlockChain
+blockChainInfinito bloque = repeat (bloque ++ bloque)
+
+listaDeIndices = iterate (+1) 1
+
+verificarSiElUsuarioTieneMasDeNMonedasDespuesDeNBloques usuario monedas block n = billetera (usuarioDespuesDeNBloques usuario block n) > monedas
+
+bloquesNecesarioParaObtenerNMonedas usuario monedas block = find (verificarSiElUsuarioTieneMasDeNMonedasDespuesDeNBloques usuario monedas block) listaDeIndices
+
