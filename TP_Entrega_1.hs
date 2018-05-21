@@ -44,19 +44,19 @@ test9 = it "la Billetera de Pepe queda en 0, luego de un cierre de cuenta" ( (bi
 
 test10 = it "La billetera deberia quedar en 27.6, luego de depositar 15, extraer 2 y hacer un upgrade" ( ( billetera.upgrade.extracción 2.deposito 15 $ pepe )`shouldBe` 27.6)
 
-test11 = it "La billetera deberia quedar con el monto que se creo al usuario pepe" ( transaccion1 pepe `shouldBe` pepe)
+test11 = it "La billetera deberia quedar con el monto que se creo al usuario pepe" ( transaccion1 pepe pepe `shouldBe` pepe)
 
-test12 = it "La billetera de Pepe queda en 15, luego de depositar 5 monedas" (transaccion2  pepe `shouldBe` nuevoValorBilletera 15 pepe)
+test12 = it "La billetera de Pepe queda en 15, luego de depositar 5 monedas" (transaccion2 pepe pepe `shouldBe` nuevoValorBilletera 15 pepe)
 
 test13 = it "La billetera de Pepe2 queda en 55, luego de depositar 5 monedas y depositar 5 a la nueva billetera que tenia 50 monedas" ( (deposito 5.nuevoValorBilletera 50.deposito 5 ) pepe2 `shouldBe` nuevoValorBilletera 55 pepe2)
 
-test14 = it "La billetera de Lucho queda en 0, luego de depositar 15, hacer un upgrade y cerrar la cuenta" (transaccion3 lucho `shouldBe` nuevoValorBilletera 0 lucho)
+test14 = it "La billetera de Lucho queda en 0, luego de depositar 15, hacer un upgrade y cerrar la cuenta" (transaccion3 lucho lucho `shouldBe` nuevoValorBilletera 0 lucho)
 
-test15 = it "La billetera de Lucho2 queda en 34, luego de depositar 1 moneda, luego depositar 2, extraer 1, depositar 8, tener un upgrade, y depositar 10." (transaccion4 lucho2 `shouldBe` nuevoValorBilletera 34 lucho2)
+test15 = it "La billetera de Lucho2 queda en 34, luego de depositar 1 moneda, luego depositar 2, extraer 1, depositar 8, tener un upgrade, y depositar 10." (transaccion4 lucho2 lucho2 `shouldBe` nuevoValorBilletera 34 lucho2)
 
-test16 = it "La billetera de Pepe queda en 3, luego de extraer 7 monedas" (transaccion5 pepe `shouldBe` nuevoValorBilletera 3 pepe)
+test16 = it "La billetera de Pepe queda en 3, luego de extraer 7 monedas" (transaccion5 pepe pepe `shouldBe` nuevoValorBilletera 3 pepe)
 
-test17 = it "La billetera de Lucho2 queda en 17, luego de depositar 7 monedas" (transaccion5 lucho2 `shouldBe` nuevoValorBilletera 17 lucho2)
+test17 = it "La billetera de Lucho2 queda en 17, luego de depositar 7 monedas" (transaccion5 lucho2 lucho2 `shouldBe` nuevoValorBilletera 17 lucho2)
 
 {-
     testN = it "QueTestea" (EstoEjecuta `shouldBe` Resultado)
@@ -71,7 +71,9 @@ type Dinero = Float
 
 type Transaccion = Usuario -> Usuario
 
-type ValidacionUsuario = String -> Usuario -> Bool
+type Evento = Dinero -> Dinero
+
+type ValidacionUsuario = Usuario -> Usuario -> Bool
 
 --EJEMPLOS--
 pepe = UnUsuario "Jose" 10
@@ -90,19 +92,17 @@ extracción :: Dinero -> Transaccion
 extracción dineroAExtraer usuario =
         nuevoValorBilletera (resultadoFinal (billetera usuario - dineroAExtraer)) usuario
 
-resultadoFinal :: Dinero -> Dinero
+resultadoFinal :: Evento
 
-resultadoFinal dineroRestado | dineroRestado  > 0 = dineroRestado
-                             | otherwise          = 0
+resultadoFinal dineroRestado = max dineroRestado 0
 
 upgrade :: Transaccion
 
 upgrade usuario = nuevoValorBilletera (upgradeBilletera.billetera $ usuario ) usuario
 
-upgradeBilletera :: Dinero -> Dinero
+upgradeBilletera :: Evento
 
-upgradeBilletera monto | monto * 0.2 < 10 = monto * 1.2
-                       | otherwise        = monto + 10
+upgradeBilletera monto = min (monto * 1.2) (monto + 10)
 
 
 cierreDeCuenta :: Transaccion
@@ -137,23 +137,33 @@ obtenerOperacion n usuario     | n == 1 && validarUsuario "Luciano" usuario = ci
                              | otherwise = quedaIgual
 -}
 
-aplicarTransaccion usuario nombreUsuario transaccion | validarUsuario nombreUsuario usuario = transaccion usuario
-                                                     | otherwise = quedaIgual usuario
+obtenerTransaccion usuario transaccion usuarioAValidar | validarUsuario usuarioAValidar usuario = transaccion
+                                       | otherwise = quedaIgual
 
-transaccion1 usuario = aplicarTransaccion usuario "Luciano" cierreDeCuenta
+transaccion1 :: Usuario -> Transaccion
 
-transaccion2 usuario = aplicarTransaccion usuario "Jose" (deposito 5)
+transaccion1 = obtenerTransaccion lucho cierreDeCuenta
 
-transaccion3 usuario = aplicarTransaccion usuario "Luciano" tocoYMeVoy
+transaccion2 :: Usuario -> Transaccion
 
-transaccion4 usuario = aplicarTransaccion usuario "Luciano" ahorranteErrante
+transaccion2 = obtenerTransaccion pepe (deposito 5)
 
-transaccion5 usuario | nombre usuario == "Jose" = aplicarTransaccion usuario "Jose" (extracción 7)
-                     | nombre usuario == "Luciano" = aplicarTransaccion usuario "Luciano" (deposito 7)
+transaccion3 :: Usuario -> Transaccion
+
+transaccion3 = obtenerTransaccion lucho tocoYMeVoy
+
+transaccion4 :: Usuario -> Transaccion
+
+transaccion4 = obtenerTransaccion lucho ahorranteErrante
+
+transaccion5 :: Usuario -> Transaccion
+
+transaccion5 usuarioAValidar| nombre usuarioAValidar == "Jose" = obtenerTransaccion pepe (extracción 7) usuarioAValidar
+                            | nombre usuarioAValidar == "Luciano" = obtenerTransaccion lucho (deposito 7) usuarioAValidar
 
 validarUsuario :: ValidacionUsuario
 
-validarUsuario nombreUsuario usuario = (nombre usuario) == nombreUsuario
+validarUsuario usuarioAValidar usuario = (nombre usuario) == (nombre usuarioAValidar)
 
 --Funcion para hacer tests
 
@@ -196,11 +206,11 @@ testear2 = hspec $ do
     test27
     test28
 
-test18 = it "Impactar la transacción 1 a Pepe. Debería quedar igual que como está inicialmente" (transaccion1 pepe `shouldBe` pepe)
+test18 = it "Impactar la transacción 1 a Pepe. Debería quedar igual que como está inicialmente" (transaccion1 pepe pepe `shouldBe` pepe)
 
-test19 = it "Impactar la transacción 5 a Lucho. Debería producir que Lucho tenga 9 monedas en su billetera" (transaccion5 lucho `shouldBe` (nuevoValorBilletera 9 lucho))
+test19 = it "Impactar la transacción 5 a Lucho. Debería producir que Lucho tenga 9 monedas en su billetera" (transaccion5 lucho lucho `shouldBe` (nuevoValorBilletera 9 lucho))
 
-test20 = it "Impactar la transacción 5 y luego la 2 a Pepe. Eso hace que tenga 8 en su billetera" ( (transaccion2.transaccion5)  pepe `shouldBe` (nuevoValorBilletera 8  pepe))
+test20 = it "Impactar la transacción 5 y luego la 2 a Pepe. Eso hace que tenga 8 en su billetera" ( (transaccion2 pepe.transaccion5 pepe)  pepe `shouldBe` (nuevoValorBilletera 8  pepe))
 
 test21 = it "Aplicar bloque1 a pepe. Esto hace que tenga 18 en su billetera" (formarBloque bloque1 pepe `shouldBe` (nuevoValorBilletera 18 pepe))
 
@@ -225,7 +235,7 @@ bloque1 :: Bloque
 bloque1 = [transaccion3,transaccion5,transaccion4,transaccion3,transaccion2,transaccion2,transaccion2,transaccion1]
 
 formarBloque :: Bloque -> Transaccion
-formarBloque bloque = foldl1 (.) bloque
+formarBloque bloque usuario = foldl1 (.) bloque
 
 aplicarBloqueAUsuarios :: Bloque -> [Usuario] -> [Usuario]
 aplicarBloqueAUsuarios bloque usuarios = map (formarBloque bloque) usuarios
