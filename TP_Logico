@@ -1,0 +1,82 @@
+/* <Spoiler Alert> */
+
+--1 Punto A: Quién Mira Qué--
+
+serie(himym).
+serie(futurama).
+serie(got).
+serie(madMen).
+serie(starWars).
+serie(onePiece).
+serie(hoc).
+serie(drHouse).
+
+persona(juan).
+persona(nadie).
+persona(nico).
+persona(maiu).
+persona(gastón).
+persona(alf).
+persona(aye).
+
+mira(juan,himym).
+mira(juan,futurama).
+mira(juan,got).
+mira(nadie,madMen).
+mira(nico,starWars).
+mira(nico,got).
+mira(maiu,onePiece).
+mira(maiu,got).
+mira(gastón,hoc).
+
+esPopular(got).
+esPopular(futurama).
+esPopular(starWars).
+
+planeaVer(juan,hoc).
+planeaVer(aye,got).
+planeaVer(gastón,himym).
+
+
+--No se pone en la base de conocimiento que Alf no mira ninguna serie por el principio de universo cerrado--
+
+--Las temporadas para mi tendrían que ser sólo un número--
+
+cantidadDeEpisodios(got,temporada3,12).
+cantidadDeEpisodios(got,temporada2,10).
+cantidadDeEpisodios(himym,temporada1,23).
+cantidadDeEpisodios(drHouse,temporada8,16).
+
+--No se pone en la base de conocimiento la cantidad de episodios que tiene la segunda temporada de "Mad Men" por el principio de universo cerrado--
+
+--2 Anexo: Lo que pasó, pasó--
+
+
+%paso(Serie, Temporada, Episodio, Lo que paso)
+paso(futurama, 2, 3, muerte(seymourDiera)).
+paso(starWars, 10, 9, muerte(emperor)).
+paso(starWars, 1, 2, relacion(parentesco, anakin, rey)).
+paso(starWars, 3, 2, relacion(parentesco, vader, luke)).
+paso(himym, 1, 1, relacion(amorosa, ted, robin)).
+paso(himym, 4, 3, relacion(amorosa, swarley, robin)).
+paso(got, 4, 5, relacion(amistad, tyrion, dragon)).
+
+
+También queremos relacionar una persona con otra y algo que supuestamente pasó en una serie que la otra persona no sabía:
+
+%leDijo/4
+leDijo(gaston, maiu, got, relacion(amistad, tyrion, dragon)).
+leDijo(nico, maiu, starWars, relacion(parentesco, vader, luke)).
+leDijo(nico, juan, got, muerte(tyrion)). 
+leDijo(aye, juan, got, relacion(amistad, tyrion, john)).
+leDijo(aye, maiu, got, relacion(amistad, tyrion, john)).
+leDijo(aye, gaston, got, relacion(amistad, tyrion, dragon)).
+
+--3 Punto B: Es Spoiler--
+
+esSpoiler(starWars,muerte(Emperor)).
+esSpoiler(starWars,relación(parentesco,anakin,rey)).
+
+
+
+El tipo de consulta que se puede hacer a esta base de conocimientos es de individual ya que debe ser específico.
