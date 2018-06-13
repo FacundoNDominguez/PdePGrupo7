@@ -1,7 +1,8 @@
 /* <Spoiler Alert> */
 
---1 Punto A: Quién Mira Qué--
+%1 Punto A: Quién Mira Qué.
 
+%serie(serie).
 serie(himym).
 serie(futurama).
 serie(got).
@@ -11,6 +12,7 @@ serie(onePiece).
 serie(hoc).
 serie(drHouse).
 
+%persona(persona).
 persona(juan).
 persona(nadie).
 persona(nico).
@@ -19,6 +21,7 @@ persona(gastón).
 persona(alf).
 persona(aye).
 
+%mira(persona,serie)
 mira(juan,himym).
 mira(juan,futurama).
 mira(juan,got).
@@ -29,30 +32,29 @@ mira(maiu,onePiece).
 mira(maiu,got).
 mira(gastón,hoc).
 
+%No se pone en la base de conocimiento que Alf no mira ninguna serie por el principio de universo cerrado.
+
+%esPopular(serie).
 esPopular(got).
 esPopular(futurama).
 esPopular(starWars).
 
+%planeaVer(persona,serie).
 planeaVer(juan,hoc).
 planeaVer(aye,got).
 planeaVer(gastón,himym).
 
+%cantidadDeEpisodios(serie,temporada,episodios).
+cantidadDeEpisodios(got,3,12).
+cantidadDeEpisodios(got,2,10).
+cantidadDeEpisodios(himym,1,23).
+cantidadDeEpisodios(drHouse,8,16).
 
---No se pone en la base de conocimiento que Alf no mira ninguna serie por el principio de universo cerrado--
+%No se pone en la base de conocimiento la cantidad de episodios que tiene la segunda temporada de "Mad Men" por el principio de universo cerrado
 
---Las temporadas para mi tendrían que ser sólo un número--
+%2 Anexo: Lo que pasó, pasó.
 
-cantidadDeEpisodios(got,temporada3,12).
-cantidadDeEpisodios(got,temporada2,10).
-cantidadDeEpisodios(himym,temporada1,23).
-cantidadDeEpisodios(drHouse,temporada8,16).
-
---No se pone en la base de conocimiento la cantidad de episodios que tiene la segunda temporada de "Mad Men" por el principio de universo cerrado--
-
---2 Anexo: Lo que pasó, pasó--
-
-
-%paso(Serie, Temporada, Episodio, Lo que paso)
+%paso(Serie, Temporada, Episodio, Lo que paso).
 paso(futurama, 2, 3, muerte(seymourDiera)).
 paso(starWars, 10, 9, muerte(emperor)).
 paso(starWars, 1, 2, relacion(parentesco, anakin, rey)).
@@ -61,10 +63,7 @@ paso(himym, 1, 1, relacion(amorosa, ted, robin)).
 paso(himym, 4, 3, relacion(amorosa, swarley, robin)).
 paso(got, 4, 5, relacion(amistad, tyrion, dragon)).
 
-
-También queremos relacionar una persona con otra y algo que supuestamente pasó en una serie que la otra persona no sabía:
-
-%leDijo/4
+%leDijo(persona,persona,serie,paso).
 leDijo(gaston, maiu, got, relacion(amistad, tyrion, dragon)).
 leDijo(nico, maiu, starWars, relacion(parentesco, vader, luke)).
 leDijo(nico, juan, got, muerte(tyrion)). 
@@ -72,11 +71,43 @@ leDijo(aye, juan, got, relacion(amistad, tyrion, john)).
 leDijo(aye, maiu, got, relacion(amistad, tyrion, john)).
 leDijo(aye, gaston, got, relacion(amistad, tyrion, dragon)).
 
---3 Punto B: Es Spoiler--
+%3 Punto B: Es Spoiler.
 
-esSpoiler(starWars,muerte(Emperor)).
-esSpoiler(starWars,relación(parentesco,anakin,rey)).
+%Ejemplos.
+%esSpoiler(serie,paso).
+%esSpoiler(starWars,muerte(Emperor)).
+%esSpoiler(starWars,relación(parentesco,anakin,rey)).
+
+%El tipo de consulta que se puede hacer a esta base de conocimientos es existencial ya que puede realizar la consulta por cualquier variable.
+
+%4 Punto C: Te pedí que no me lo dijeras.
+
+%Ejemplos.
+%leSpoileo(persona,persona,serie).
+%leSpoileo(gastón,maiu,got).
+%leSpoileo(nico,maiu,starWars).
+
+%5 Punto D: Responsable.
+
+%Ejemplos.
+%televidenteResponsable(persona).
+%televienteResponsable(juan).
+%televidenteResponsable(aye).
+%televidenteResponsable(maiu).
+
+% o podemos poner en efecto: Inversibilidad?
+%televidenteResponsable(Responsable).
+%Responsable: juan.
+%Responsable: aye.
+%Responsable: maiu.
+
+%6 Punto E: Viene Zafando.
+
+%Ejemplos.
+%vieneZafando(persona,serie).
+%vieneZafando(juan,himym).
+%vieneZafando(juan,got).
+%vieneZafando
 
 
 
-El tipo de consulta que se puede hacer a esta base de conocimientos es de individual ya que debe ser específico.
