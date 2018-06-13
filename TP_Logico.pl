@@ -14,10 +14,9 @@ serie(drHouse).
 
 %persona(persona).
 persona(juan).
-persona(nadie).
 persona(nico).
 persona(maiu).
-persona(gastón).
+persona(gaston).
 persona(alf).
 persona(aye).
 
@@ -25,12 +24,11 @@ persona(aye).
 mira(juan,himym).
 mira(juan,futurama).
 mira(juan,got).
-mira(nadie,madMen).
 mira(nico,starWars).
 mira(nico,got).
 mira(maiu,onePiece).
 mira(maiu,got).
-mira(gastón,hoc).
+mira(gaston,hoc).
 
 %No se pone en la base de conocimiento que Alf no mira ninguna serie por el principio de universo cerrado.
 
@@ -42,7 +40,7 @@ esPopular(starWars).
 %planeaVer(persona,serie).
 planeaVer(juan,hoc).
 planeaVer(aye,got).
-planeaVer(gastón,himym).
+planeaVer(gaston,himym).
 
 %cantidadDeEpisodios(serie,temporada,episodios).
 cantidadDeEpisodios(got,3,12).
@@ -66,7 +64,7 @@ paso(got, 4, 5, relacion(amistad, tyrion, dragon)).
 %leDijo(persona,persona,serie,paso).
 leDijo(gaston, maiu, got, relacion(amistad, tyrion, dragon)).
 leDijo(nico, maiu, starWars, relacion(parentesco, vader, luke)).
-leDijo(nico, juan, got, muerte(tyrion)). 
+leDijo(nico, juan, got, muerte(tyrion)).
 leDijo(aye, juan, got, relacion(amistad, tyrion, john)).
 leDijo(aye, maiu, got, relacion(amistad, tyrion, john)).
 leDijo(aye, gaston, got, relacion(amistad, tyrion, dragon)).
@@ -78,6 +76,8 @@ leDijo(aye, gaston, got, relacion(amistad, tyrion, dragon)).
 %esSpoiler(starWars,muerte(Emperor)).
 %esSpoiler(starWars,relación(parentesco,anakin,rey)).
 
+esSpoiler(Serie,Spoiler):- serie(Serie), paso(Serie,_,_,Spoiler).
+
 %El tipo de consulta que se puede hacer a esta base de conocimientos es existencial ya que puede realizar la consulta por cualquier variable.
 
 %4 Punto C: Te pedí que no me lo dijeras.
@@ -86,6 +86,15 @@ leDijo(aye, gaston, got, relacion(amistad, tyrion, dragon)).
 %leSpoileo(persona,persona,serie).
 %leSpoileo(gastón,maiu,got).
 %leSpoileo(nico,maiu,starWars).
+
+leSpoileo(Persona1 , Persona2, Serie):- persona(Persona1), persona(Persona2),
+    Persona1 \= Persona2,
+    leDijo(Persona1, Persona2, Serie, _),
+    leAfectaElSpoiler(Persona2, Serie).
+
+leAfectaElSpoiler(Persona,Serie):- persona(Persona), planeaVer(Persona, Serie).
+leAfectaElSpoiler(Persona,Serie):- persona(Persona), mira(Persona, Serie).
+
 
 %5 Punto D: Responsable.
 
@@ -101,6 +110,10 @@ leDijo(aye, gaston, got, relacion(amistad, tyrion, dragon)).
 %Responsable: aye.
 %Responsable: maiu.
 
+televidenteResponsable(Persona1):- %Hay que mejorarlo. No funciona bien.
+  persona(Persona1),
+  forall((serie(Serie) , persona(Persona2)), not(leSpoileo(Persona1, Persona2, Serie))).
+
 %6 Punto E: Viene Zafando.
 
 %Ejemplos.
@@ -108,6 +121,3 @@ leDijo(aye, gaston, got, relacion(amistad, tyrion, dragon)).
 %vieneZafando(juan,himym).
 %vieneZafando(juan,got).
 %vieneZafando
-
-
-
