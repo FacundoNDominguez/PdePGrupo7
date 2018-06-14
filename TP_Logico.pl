@@ -28,6 +28,7 @@ mira(nico,starWars).
 mira(nico,got).
 mira(maiu,onePiece).
 mira(maiu,got).
+mira(maiu,starWars).
 mira(gaston,hoc).
 
 %No se pone en la base de conocimiento que Alf no mira ninguna serie por el principio de universo cerrado.
@@ -111,8 +112,8 @@ leAfectaElSpoiler(Persona,Serie):- persona(Persona), mira(Persona, Serie).
 %Responsable: maiu.
 
 televidenteResponsable(Persona1):- %Hay que mejorarlo. No funciona bien.
-  persona(Persona1),
-  forall((serie(Serie) , persona(Persona2)), not(leSpoileo(Persona1, Persona2, Serie))).
+  persona(Persona1), 
+  forall(persona(Persona2), not(leSpoileo(Persona1, Persona2, _))).
 
 %6 Punto E: Viene Zafando.
 
