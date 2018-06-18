@@ -122,3 +122,8 @@ televidenteResponsable(Persona1):- %Hay que mejorarlo. No funciona bien.
 %vieneZafando(juan,himym).
 %vieneZafando(juan,got).
 %vieneZafando
+
+esFuerte(relacion(amorosa,_,_)).
+esFuerte(relacion(parentesco,_,_)).
+esFuerte(muerte(_)).
+
