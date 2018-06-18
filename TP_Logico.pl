@@ -28,7 +28,6 @@ mira(nico,starWars).
 mira(nico,got).
 mira(maiu,onePiece).
 mira(maiu,got).
-mira(maiu,starWars).
 mira(gaston,hoc).
 
 %No se pone en la base de conocimiento que Alf no mira ninguna serie por el principio de universo cerrado.
@@ -89,9 +88,9 @@ esSpoiler(Serie,Spoiler):- serie(Serie), paso(Serie,_,_,Spoiler).
 %leSpoileo(nico,maiu,starWars).
 
 leSpoileo(Persona1 , Persona2, Serie):- persona(Persona1), persona(Persona2),
-    Persona1 \= Persona2,
     leDijo(Persona1, Persona2, Serie, _),
-    leAfectaElSpoiler(Persona2, Serie).
+    leAfectaElSpoiler(Persona2, Serie),
+    Persona1 \= Persona2.
 
 leAfectaElSpoiler(Persona,Serie):- persona(Persona), planeaVer(Persona, Serie).
 leAfectaElSpoiler(Persona,Serie):- persona(Persona), mira(Persona, Serie).
@@ -112,8 +111,9 @@ leAfectaElSpoiler(Persona,Serie):- persona(Persona), mira(Persona, Serie).
 %Responsable: maiu.
 
 televidenteResponsable(Persona1):- %Hay que mejorarlo. No funciona bien.
-  persona(Persona1), 
-  forall(persona(Persona2), not(leSpoileo(Persona1, Persona2, _))).
+%Miren como use el not ahi, esta bien Fresh.
+  persona(Persona1),
+  not(leSpoileo(Persona1,_,_)).
 
 %6 Punto E: Viene Zafando.
 
