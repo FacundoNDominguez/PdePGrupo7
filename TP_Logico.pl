@@ -127,3 +127,6 @@ esFuerte(relacion(amorosa,_,_)).
 esFuerte(relacion(parentesco,_,_)).
 esFuerte(muerte(_)).
 
+vieneSafando(Persona, Serie):-
+    persona(Persona),
+    not(leSpoileo(_,Persona, Serie)).
