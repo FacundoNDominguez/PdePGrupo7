@@ -10,23 +10,9 @@
 
 %1 Punto A: Quién Mira Qué.
 
-%serie(serie).
-serie(himym).
-serie(futurama).
-serie(got).
-serie(madMen).
-serie(starWars).
-serie(onePiece).
-serie(hoc).
-serie(drHouse).
+serie(Serie):- mira(_,Serie).
 
-%persona(persona).
-persona(juan).
-persona(nico).
-persona(maiu).
-persona(gaston).
-persona(alf).
-persona(aye).
+persona(Persona):- mira(Persona,_).
 
 %mira(persona,serie)
 mira(juan,himym).
@@ -84,7 +70,7 @@ leDijo(aye, gaston, got, relacion(amistad, tyrion, dragon)).
 %esSpoiler(starWars,muerte(Emperor)).
 %esSpoiler(starWars,relación(parentesco,anakin,rey)).
 
-esSpoiler(Serie,Spoiler):- serie(Serie), paso(Serie,_,_,Spoiler).
+esSpoiler(Serie,Spoiler):- paso(Serie,_,_,Spoiler).
 
 %El tipo de consulta que se puede hacer a esta base de conocimientos es existencial ya que puede realizar la consulta por cualquier variable.
 
@@ -95,13 +81,12 @@ esSpoiler(Serie,Spoiler):- serie(Serie), paso(Serie,_,_,Spoiler).
 %leSpoileo(gastón,maiu,got).
 %leSpoileo(nico,maiu,starWars).
 
-leSpoileo(Persona1 , Persona2, Serie):- persona(Persona1), persona(Persona2),
+leSpoileo(Persona1 , Persona2, Serie):-
     leDijo(Persona1, Persona2, Serie, _),
-    leAfectaElSpoiler(Persona2, Serie),
-    Persona1 \= Persona2.
+    planeaVerOMiraSerie(Persona2, Serie).
 
-leAfectaElSpoiler(Persona,Serie):- persona(Persona), planeaVer(Persona, Serie).
-leAfectaElSpoiler(Persona,Serie):- persona(Persona), mira(Persona, Serie).
+planeaVerOMiraSerie(Persona,Serie):- planeaVer(Persona, Serie).
+planeaVerOMiraSerie(Persona,Serie):- mira(Persona, Serie).
 
 
 %5 Punto D: Responsable.
@@ -118,10 +103,10 @@ leAfectaElSpoiler(Persona,Serie):- persona(Persona), mira(Persona, Serie).
 %Responsable: aye.
 %Responsable: maiu.
 
-televidenteResponsable(Persona1):- %Hay que mejorarlo. No funciona bien.
+televidenteResponsable(Persona):- %Hay que mejorarlo. No funciona bien.
 %Miren como use el not ahi, esta bien Fresh.
-  persona(Persona1),
-  not(leSpoileo(Persona1,_,_)).
+  persona(Persona),
+  not(leSpoileo(Persona,_,_)).
 
 %6 Punto E: Viene Zafando.
 
@@ -131,10 +116,13 @@ televidenteResponsable(Persona1):- %Hay que mejorarlo. No funciona bien.
 %vieneZafando(juan,got).
 %vieneZafando
 
-esFuerte(relacion(amorosa,_,_)).
-esFuerte(relacion(parentesco,_,_)).
-esFuerte(muerte(_)).
+esFuerte(muera(LoQuePaso)):- paso(_,_,_, muerte(LoQuePaso)).
+esFuerte(relacion(LoQuePaso)):- paso(_,_,_,relacion(LoQuePaso,_,_)), LoQuePaso \= amistad. 
+%esFuerte(relacion(LoQuePaso,_,_)):- paso(_,_,_,relacion(LoQuePaso,_,_)), LoQuePaso \= amistad. Cual de las dos ?
+%esFuerte(relacion(amorosa,_,_)).
+%esFuerte(relacion(parentesco,_,_)).
+%esFuerte(muerte(_)).
 
 vieneSafando(Persona, Serie):-
-    persona(Persona),
-    not(leSpoileo(_,Persona, Serie)).
+		planeaVerOMiraSerie(Persona,Serie),
+		not(leSpoileo(_,Persona, Serie)).
