@@ -14,7 +14,8 @@ serie(Serie):- mira(_,Serie).
 
 persona(Persona):- mira(Persona,_).
 
-%mira(persona,serie)
+%mira(persona,serie).
+
 mira(juan,himym).
 mira(juan,futurama).
 mira(juan,got).
@@ -27,16 +28,20 @@ mira(gaston,hoc).
 %No se pone en la base de conocimiento que Alf no mira ninguna serie por el principio de universo cerrado.
 
 %esPopular(serie).
+
 esPopular(got).
 esPopular(futurama).
 esPopular(starWars).
 
 %planeaVer(persona,serie).
+
 planeaVer(juan,hoc).
 planeaVer(aye,got).
 planeaVer(gaston,himym).
 
+
 %cantidadDeEpisodios(serie,temporada,episodios).
+
 cantidadDeEpisodios(got,3,12).
 cantidadDeEpisodios(got,2,10).
 cantidadDeEpisodios(himym,1,23).
@@ -47,6 +52,7 @@ cantidadDeEpisodios(drHouse,8,16).
 %2 Anexo: Lo que pasó, pasó.
 
 %paso(Serie, Temporada, Episodio, Lo que paso).
+
 paso(futurama, 2, 3, muerte(seymourDiera)).
 paso(starWars, 10, 9, muerte(emperor)).
 paso(starWars, 1, 2, relacion(parentesco, anakin, rey)).
@@ -56,6 +62,7 @@ paso(himym, 4, 3, relacion(amorosa, swarley, robin)).
 paso(got, 4, 5, relacion(amistad, tyrion, dragon)).
 
 %leDijo(persona,persona,serie,paso).
+
 leDijo(gaston, maiu, got, relacion(amistad, tyrion, dragon)).
 leDijo(nico, maiu, starWars, relacion(parentesco, vader, luke)).
 leDijo(nico, juan, got, muerte(tyrion)).
@@ -65,24 +72,15 @@ leDijo(aye, gaston, got, relacion(amistad, tyrion, dragon)).
 
 %3 Punto B: Es Spoiler.
 
-%Ejemplos.
-%esSpoiler(serie,paso).
-%esSpoiler(starWars,muerte(Emperor)).
-%esSpoiler(starWars,relación(parentesco,anakin,rey)).
-
 esSpoiler(Serie,Spoiler):- paso(Serie,_,_,Spoiler).
 
 %El tipo de consulta que se puede hacer a esta base de conocimientos es existencial ya que puede realizar la consulta por cualquier variable.
 
 %4 Punto C: Te pedí que no me lo dijeras.
 
-%Ejemplos.
-%leSpoileo(persona,persona,serie).
-%leSpoileo(gastón,maiu,got).
-%leSpoileo(nico,maiu,starWars).
-
-leSpoileo(Persona1 , Persona2, Serie):-
-    leDijo(Persona1, Persona2, Serie, _),
+leSpoileo(Persona , Persona2, Serie):-
+    leDijo(Persona, Persona2, Serie, Spoiler),
+    esSpoiler(Serie,Spoiler),						%con esto verifico si lo que le dijo es un espoiler, depues veo si le importa o no.
     planeaVerOMiraSerie(Persona2, Serie).
 
 planeaVerOMiraSerie(Persona,Serie):- planeaVer(Persona, Serie).
@@ -91,18 +89,6 @@ planeaVerOMiraSerie(Persona,Serie):- mira(Persona, Serie).
 
 %5 Punto D: Responsable.
 
-%Ejemplos.
-%televidenteResponsable(persona).
-%televienteResponsable(juan).
-%televidenteResponsable(aye).
-%televidenteResponsable(maiu).
-
-% o podemos poner en efecto: Inversibilidad?
-%televidenteResponsable(Responsable).
-%Responsable: juan.
-%Responsable: aye.
-%Responsable: maiu.
-
 televidenteResponsable(Persona):- %Hay que mejorarlo. No funciona bien.
 %Miren como use el not ahi, esta bien Fresh.
   persona(Persona),
@@ -110,19 +96,39 @@ televidenteResponsable(Persona):- %Hay que mejorarlo. No funciona bien.
 
 %6 Punto E: Viene Zafando.
 
-%Ejemplos.
-%vieneZafando(persona,serie).
-%vieneZafando(juan,himym).
-%vieneZafando(juan,got).
-%vieneZafando
+esFuerte(Serie):- paso(Serie,_,_,muerte(_)).
+esFuerte(Serie):- paso(Serie,_,_,relacion(LoQuePaso,_,_)), LoQuePaso \= amistad. 
 
-esFuerte(muera(LoQuePaso)):- paso(_,_,_, muerte(LoQuePaso)).
-esFuerte(relacion(LoQuePaso)):- paso(_,_,_,relacion(LoQuePaso,_,_)), LoQuePaso \= amistad. 
+%esFuerte(muera(LoQuePaso)):- paso(_,_,_, muerte(LoQuePaso)).
+%esFuerte(relacion(LoQuePaso)):- paso(_,_,_,relacion(LoQuePaso,_,_)), LoQuePaso \= amistad. 
 %esFuerte(relacion(LoQuePaso,_,_)):- paso(_,_,_,relacion(LoQuePaso,_,_)), LoQuePaso \= amistad. Cual de las dos ?
-%esFuerte(relacion(amorosa,_,_)).
-%esFuerte(relacion(parentesco,_,_)).
-%esFuerte(muerte(_)).
 
-vieneSafando(Persona, Serie):-
+
+vieneZafando(Persona, Serie):- 
 		planeaVerOMiraSerie(Persona,Serie),
 		not(leSpoileo(_,Persona, Serie)).
+%seriePopularOConHechosFuertes(Serie).   %Este predicaco me parece al dope, capaz delege al pedo.
+
+seriePopularOConHechosFuertes(Serie):- esPopular(Serie).
+seriePopularOConHechosFuertes(Serie):- esFuerte(Serie).
+
+% Tests
+
+:- begin_tests(series).
+
+test(esEspoilerPAraStarWars, nondet):-
+		esSpoiler(starWars,muerte(emperor)).
+
+test(esEspoilerPAraStarWars, nondet):-
+		esSpoiler(starWars,relacion(parentesco,anakin,rey)).
+
+test(noEsSpoilerDeStarWars, nondet):-
+		not(esSpoiler(starWars,relacion(parentesco,anakin,lavezzi))).
+
+test(gastonSpoileoAMaiuSobreGot, nondet):-
+		leSpoileo(gaston,maiu,got).
+
+test(nicoSpoileoAMaiuSobreStarWarsPeroAMaiuNoLeInteresa, nondet):-
+		not(leSpoileo(nico,maiu,starWars)).
+
+:- end_tests(series).
