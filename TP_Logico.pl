@@ -107,7 +107,7 @@ esFuerte(Serie):- paso(Serie,_,_,relacion(LoQuePaso,_,_)), LoQuePaso \= amistad.
 vieneZafando(Persona, Serie):- 
 		planeaVerOMiraSerie(Persona,Serie),
 		not(leSpoileo(_,Persona, Serie)).
-%seriePopularOConHechosFuertes(Serie).   %Este predicaco me parece al dope, capaz delege al pedo.
+%seriePopularOConHechosFuertes(Serie).   %Este predicaco me parece al dope poque no tene peso a la hora de evaluar el predicado.
 
 seriePopularOConHechosFuertes(Serie):- esPopular(Serie).
 seriePopularOConHechosFuertes(Serie):- esFuerte(Serie).
