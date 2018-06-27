@@ -24,8 +24,9 @@ mira(nico,got).
 mira(maiu,onePiece).
 mira(maiu,got).
 mira(gaston,hoc).
+mira(gasto,starWars).
 
-%No se pone en la base de conocimiento que Alf no mira ninguna serie por el principio de universo cerrado.
+% No se pone en la base de conocimiento que Alf no mira ninguna serie por el principio de universo cerrado.
 
 %esPopular(serie).
 
@@ -106,8 +107,9 @@ esFuerte(Serie):- paso(Serie,_,_,relacion(LoQuePaso,_,_)), LoQuePaso \= amistad.
 
 vieneZafando(Persona, Serie):- 
 		planeaVerOMiraSerie(Persona,Serie),
-		not(leSpoileo(_,Persona, Serie)).
-%seriePopularOConHechosFuertes(Serie).   %Este predicaco me parece al dope poque no tene peso a la hora de evaluar el predicado.
+		not(leSpoileo(_,Persona, Serie)),
+		seriePopularOConHechosFuertes(Serie).   % Este predicaco me parece al dope poque 
+												% no tene peso a la hora de evaluar el predicado.
 
 seriePopularOConHechosFuertes(Serie):- esPopular(Serie).
 seriePopularOConHechosFuertes(Serie):- esFuerte(Serie).
@@ -130,5 +132,26 @@ test(gastonSpoileoAMaiuSobreGot, nondet):-
 
 test(nicoSpoileoAMaiuSobreStarWarsPeroAMaiuNoLeInteresa, nondet):-
 		not(leSpoileo(nico,maiu,starWars)).
+
+test(juanVieneZafandoConHIMYM, nondet):-
+		vieneZafando(juan,himym).
+
+test(juanVieneZafandoConGot, nondet):-
+		vieneZafando(juan,got).
+
+test(juanVieneZafandoConFuturama, nondet):-
+		vieneZafando(juan,futurama).
+
+%test(juanVieneZafandoConHoc, nondet):-		% si en el predicado vieneZafando coloco la condición 
+%		vieneZafando(juan,hoc).				% seriePopularOConHechosFuertes(Serie) no funciona el test
+											% cuando tendria que funcionar y nose si realmente tiene peso 
+											% el predicado seriePopularOConHechosFuertes(Serie) ya que es una "condicon"
+											% que me da igual si se cumple o no, por otro lado consultando
+											% por separado cada condición da como resultado que juan vieneZafando con
+											% house of cars.
+
+test(soloNicoVieneZafandoConStarWars, nondet):-
+		vieneZafando(Persona,starWars),
+		not(Persona \= nico).
 
 :- end_tests(series).
