@@ -97,23 +97,25 @@ televidenteResponsable(Persona):- %Hay que mejorarlo. No funciona bien.
 
 %6 Punto E: Viene Zafando.
 
-esFuerte(Serie):- paso(Serie,_,_,muerte(_)).
-esFuerte(Serie):- paso(Serie,_,_,relacion(LoQuePaso,_,_)), LoQuePaso \= amistad. 
-
-%esFuerte(muera(LoQuePaso)):- paso(_,_,_, muerte(LoQuePaso)).
-%esFuerte(relacion(LoQuePaso)):- paso(_,_,_,relacion(LoQuePaso,_,_)), LoQuePaso \= amistad. 
-%esFuerte(relacion(LoQuePaso,_,_)):- paso(_,_,_,relacion(LoQuePaso,_,_)), LoQuePaso \= amistad. Cual de las dos ?
-
-
 vieneZafando(Persona, Serie):- 
 		planeaVerOMiraSerie(Persona,Serie),
-		not(leSpoileo(_,Persona, Serie)),
-		seriePopularOConHechosFuertes(Serie).   % Este predicaco me parece al dope poque 
-												% no tene peso a la hora de evaluar el predicado.
+		seriePopularOConHechosFuertes(Serie),
+		not(leSpoileo(_,Persona, Serie)).
+												
 
 seriePopularOConHechosFuertes(Serie):- esPopular(Serie).
-seriePopularOConHechosFuertes(Serie):- esFuerte(Serie).
+seriePopularOConHechosFuertes(Serie):- pasoCosasFuertesEnSusTemporadas(Serie).
 
+pasoCosasFuertesEnSusTemporadas(Serie):-
+		capitulosPorTemporada(Serie,Temporada,_),
+		forall(capitulosPorTemporada(Serie,Temporada,_),sucesoFuerteTemporada(Serie,Temporada)).
+
+sucesoFuerteTemporada(Serie,Temporada):-paso(Serie,Temporada,_,muerte(_)).
+sucesoFuerteTemporada(Serie,Temporada):-paso(Serie,Temporada,_,relacion(parentesco,_,_)).
+sucesoFuerteTemporada(Serie,Temporada):-paso(Serie,Temporada,_,relacion(amorosa,_,_)).
+
+
+capitulosPorTemporada(Serie,Temporada,_):-paso(Serie,Temporada,_,_).
 % Tests
 
 :- begin_tests(series).
@@ -139,16 +141,11 @@ test(juanVieneZafandoConHIMYM, nondet):-
 test(juanVieneZafandoConGot, nondet):-
 		vieneZafando(juan,got).
 
-test(juanVieneZafandoConFuturama, nondet):-
-		vieneZafando(juan,futurama).
+test(juanNoVieneZafandoConFuturama, nondet):-
+		not(vieneZafando(juan,futurama)).
 
-%test(juanVieneZafandoConHoc, nondet):-		% si en el predicado vieneZafando coloco la condición 
-%		vieneZafando(juan,hoc).				% seriePopularOConHechosFuertes(Serie) no funciona el test
-											% cuando tendria que funcionar y nose si realmente tiene peso 
-											% el predicado seriePopularOConHechosFuertes(Serie) ya que es una "condicon"
-											% que me da igual si se cumple o no, por otro lado consultando
-											% por separado cada condición da como resultado que juan vieneZafando con
-											% house of cars.
+test(juanVieneZafandoConHoc, nondet):-		
+		vieneZafando(juan,hoc).
 
 test(soloNicoVieneZafandoConStarWars, nondet):-
 		vieneZafando(Persona,starWars),
