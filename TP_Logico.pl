@@ -24,7 +24,9 @@ mira(nico,got).
 mira(maiu,onePiece).
 mira(maiu,got).
 mira(gaston,hoc).
-mira(gasto,starWars).
+mira(gaston,starWars).
+
+mira(pedro,got).
 
 % No se pone en la base de conocimiento que Alf no mira ninguna serie por el principio de universo cerrado.
 
@@ -71,6 +73,10 @@ leDijo(aye, juan, got, relacion(amistad, tyrion, john)).
 leDijo(aye, maiu, got, relacion(amistad, tyrion, john)).
 leDijo(aye, gaston, got, relacion(amistad, tyrion, dragon)).
 
+leDijo(nico, juan, futurama, muerte(seymourDiera)).
+leDijo(pedro,aye,got,relacion(amistad, tyrion, dragon)).
+leDijo(pedro,nico,got,relacion(parentesco, tyrion, dragon)).
+
 %3 Punto B: Es Spoiler.
 
 esSpoiler(Serie,Spoiler):- paso(Serie,_,_,Spoiler).
@@ -97,25 +103,24 @@ televidenteResponsable(Persona):- %Hay que mejorarlo. No funciona bien.
 
 %6 Punto E: Viene Zafando.
 
-vieneZafando(Persona, Serie):- 
+vieneZafando(Persona, Serie):-
 		planeaVerOMiraSerie(Persona,Serie),
 		seriePopularOConHechosFuertes(Serie),
 		not(leSpoileo(_,Persona, Serie)).
-												
+
 
 seriePopularOConHechosFuertes(Serie):- esPopular(Serie).
 seriePopularOConHechosFuertes(Serie):- pasoCosasFuertesEnSusTemporadas(Serie).
 
 pasoCosasFuertesEnSusTemporadas(Serie):-
-		capitulosPorTemporada(Serie,Temporada,_),
-		forall(capitulosPorTemporada(Serie,Temporada,_),sucesoFuerteTemporada(Serie,Temporada)).
+        cantidadDeEpisodios(Serie, _, _),
+        forall(cantidadDeEpisodios(Serie, Temporada,_),sucesoFuerteTemporada(Serie, Temporada)).
 
 sucesoFuerteTemporada(Serie,Temporada):-paso(Serie,Temporada,_,muerte(_)).
 sucesoFuerteTemporada(Serie,Temporada):-paso(Serie,Temporada,_,relacion(parentesco,_,_)).
 sucesoFuerteTemporada(Serie,Temporada):-paso(Serie,Temporada,_,relacion(amorosa,_,_)).
 
 
-capitulosPorTemporada(Serie,Temporada,_):-paso(Serie,Temporada,_,_).
 % Tests
 
 :- begin_tests(series).
@@ -144,11 +149,32 @@ test(juanVieneZafandoConGot, nondet):-
 test(juanNoVieneZafandoConFuturama, nondet):-
 		not(vieneZafando(juan,futurama)).
 
-test(juanVieneZafandoConHoc, nondet):-		
+test(juanVieneZafandoConHoc, nondet):-
 		vieneZafando(juan,hoc).
 
 test(soloNicoVieneZafandoConStarWars, nondet):-
 		vieneZafando(Persona,starWars),
 		not(Persona \= nico).
 
+test(gastonEsMalaGente, nondet):-
+		malaGente(gaston).
+
+test(nicoEsMalaGente, nondet):-
+		malaGente(nico).
+
+test(pedroNoEsMalaGente, nondet):-
+		not(malaGente(pedro)).
+
 :- end_tests(series).
+
+
+% PARTE 2
+
+malaGente(Persona):-
+    leDijo(Persona,_,_,_),
+    forall(leDijo(Persona,Victima,_,_),leSpoileo(Persona, Victima,_)).
+
+malaGente(Persona):-
+    leSpoileo(Persona,_,Serie),
+    not(mira(Persona, Serie)).
+
