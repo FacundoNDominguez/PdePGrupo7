@@ -64,6 +64,12 @@ paso(himym, 1, 1, relacion(amorosa, ted, robin)).
 paso(himym, 4, 3, relacion(amorosa, swarley, robin)).
 paso(got, 4, 5, relacion(amistad, tyrion, dragon)).
 
+paso(got, 3, 2, plotTwist([suenio,sinPiernas])).
+paso(got, 3, 12, plotTwist([fuego,boda])).
+paso(superCampeones, 9, 9, plotTwist([suenio,coma,sinPiernas])).
+paso(drHouse, 8, 7, plotTwist([coma,pastillas])).
+
+
 %leDijo(persona,persona,serie,paso).
 
 leDijo(gaston, maiu, got, relacion(amistad, tyrion, dragon)).
@@ -178,3 +184,12 @@ malaGente(Persona):-
     leSpoileo(Persona,_,Serie),
     not(mira(Persona, Serie)).
 
+cliche(Serie,Temporada,Capitulo):-
+    paso(Serie, Temporada, Capitulo, plotTwist(Lista)),
+    forall(member(PalabraClave,Lista), (paso(Serie2,Temp2,Cap2,plotTwist(Lista2)), member(PalabraClave, Lista2), Serie \= Serie2, Temporada \= Temp2, Capitulo\= Cap2)).
+%Chiquita funciion me mande, no se si es lo que pide porq no se entiende la consigna
+
+fuerte(muerte(_)).
+fuerte(relacion(parentesco,_,_)).
+fuerte(relacion(amorosa,_,_)).
+fuerte(PlotTwist):- paso(Serie, Temporada, CapituloFinal, PlotTwist), cantidadDeEpisodios(Serie,Temporada,CapituloFinal), not(cliche(Serie,Temporada,CapituloFinal)).
