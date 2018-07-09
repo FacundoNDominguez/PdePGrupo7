@@ -193,3 +193,25 @@ fuerte(muerte(_)).
 fuerte(relacion(parentesco,_,_)).
 fuerte(relacion(amorosa,_,_)).
 fuerte(PlotTwist):- paso(Serie, Temporada, CapituloFinal, PlotTwist), cantidadDeEpisodios(Serie,Temporada,CapituloFinal), not(cliche(Serie,Temporada,CapituloFinal)).
+
+calcularPopularidad(Serie,Popularidad) :- findall(Persona,mira(Persona,Serie),Personas),
+    findall(conversacion(Emisor,Receptor),leDijo(Emisor,Receptor,Serie,_),Conversaciones),
+    length(Personas,CantPersonas),
+    length(Conversaciones,CantConveraciones),
+    Popularidad is (CantPersonas * CantConveraciones).
+
+popular(Serie):- calcularPopularidad(Serie,Popularidad),
+    calcularPopularidad(starWars, PuntosDeSW),
+    Popularidad >= PuntosDeSW.
+
+amigo(nico, maiu).
+amigo(maiu, gaston).
+amigo(maiu, juan).
+amigo(juan, aye).
+
+fullSpoil(Persona,Victima):- leSpoileo(Persona, Victima,Serie), Persona\=Victima.
+
+fullSpoil(Persona,Victima):- amigo(Victima, AmigoVictima),
+    fullSpoil(Persona, AmigoVictima).
+
+%No Funciona, nunca fui bueno para lo recursivo, exceptuando que hablemos de materias de la Facultad. -Facu
