@@ -186,19 +186,31 @@ malaGente(Persona):-
 
 cliche(Serie,Temporada,Capitulo):-
     paso(Serie, Temporada, Capitulo, plotTwist(Lista)),
-    forall(member(PalabraClave,Lista), (paso(Serie2,Temp2,Cap2,plotTwist(Lista2)), member(PalabraClave, Lista2), Serie \= Serie2, Temporada \= Temp2, Capitulo\= Cap2)).
+    forall(member(PalabraClave,Lista),contienePalabrasClavesEnOtroLado(Serie, Temporada,Capitulo, PalabraClave)).
 %Chiquita funciion me mande, no se si es lo que pide porq no se entiende la consigna
+
+contienePalabrasClavesEnOtroLado(Serie, Temporada,Capitulo, PalabraClave):-
+	 paso(Serie2,Temp2,Cap2,plotTwist(Lista2)), 
+	 member(PalabraClave, Lista2), 
+	 Serie \= Serie2, Temporada \= Temp2, Capitulo\= Cap2.
 
 fuerte(muerte(_)).
 fuerte(relacion(parentesco,_,_)).
 fuerte(relacion(amorosa,_,_)).
 fuerte(PlotTwist):- paso(Serie, Temporada, CapituloFinal, PlotTwist), cantidadDeEpisodios(Serie,Temporada,CapituloFinal), not(cliche(Serie,Temporada,CapituloFinal)).
 
-calcularPopularidad(Serie,Popularidad) :- findall(Persona,mira(Persona,Serie),Personas),
-    findall(conversacion(Emisor,Receptor),leDijo(Emisor,Receptor,Serie,_),Conversaciones),
-    length(Personas,CantPersonas),
-    length(Conversaciones,CantConveraciones),
+calcularPopularidad(Serie,Popularidad) :-
+	cantidadQueMiran(Serie,CantPersonas),
+	cantidadDeCharlas(Serie,CantConveraciones),
     Popularidad is (CantPersonas * CantConveraciones).
+
+cantidadQueMiran(Serie,Cantidad):-
+	findall(Persona,mira(Persona,Serie),Personas),
+	length(Personas,Cantidad).
+
+cantidadDeCharlas(Serie, Cantidad):-
+	findall(conversacion(Emisor,Receptor),leDijo(Emisor,Receptor,Serie,_),Conversaciones),
+	length(Conversaciones,Cantidad).
 
 popular(Serie):- calcularPopularidad(Serie,Popularidad),
     calcularPopularidad(starWars, PuntosDeSW),
@@ -209,9 +221,50 @@ amigo(maiu, gaston).
 amigo(maiu, juan).
 amigo(juan, aye).
 
-fullSpoil(Persona,Victima):- leSpoileo(Persona, Victima,Serie), Persona\=Victima.
+fullSpoil(Persona,Victima):- leSpoileo(Persona, Victima,_).
 
-fullSpoil(Persona,Victima):- amigo(Victima, AmigoVictima),
+fullSpoil(Persona,Victima):- amigo(Victima, AmigoVictima), Persona\=AmigoVictima, Persona\=Victima,
     fullSpoil(Persona, AmigoVictima).
 
 %No Funciona, nunca fui bueno para lo recursivo, exceptuando que hablemos de materias de la Facultad. -Facu
+
+
+%Test
+
+:- begin_tests(testsDe2daParte).
+
+test(gastonEsMalaGente, nondet) :- malaGente(gaston).
+
+test(nicoEsMalaGente, nondet) :- malaGente(nico).
+
+test(pedroNoEsMalaGente, nondet) :- not(malaGente(pedro)).
+
+test(muerteSeymourDieraEsFuerte, nondet):- fuerte(muerte(seymourDiera)).
+
+test(palpatineDieraEsFuerte, nondet):- fuerte(muerte(emperor)).
+
+test(aniYReyParentesco, nondet):- fuerte(relacion(parentesco, anakin, rey)).
+
+test(vaderYLukeParentesco, nondet):- fuerte(relacion(parentesco, vader, luke)).
+
+test(amorEntreTedYRobin, nondet):- fuerte(relacion(amorosa, ted, robin)).
+
+test(amorEntreSwarleyYRobin, nondet):- fuerte(relacion(amorosa, swarley, robin)).
+
+test(giroDeGOTfuegoBda,nondet):- fuerte(plotTwist([fuego,boda])).
+
+test(giroDeGOTsuenio,nondet):- not(fuerte(plotTwist([suenio,sinPiernas]))).
+
+test(giroDeGOTsuenio,nondet):- not(fuerte(plotTwist([coma,pastillas]))).
+
+test(swEsPopular, nondet):- popular(starWars).
+
+test(gotEsPopular, nondet):- popular(got).
+
+test(hocEsPopular, nondet):- popular(hoc).
+
+test(nicoHizoSpoiler,nondet):- fullSpoil(nico,maiu),fullSpoil(nico,juan).
+
+%No continuo con los demas xq no me sale la funcion recursiva
+:- end_tests(testsDe2daParte).
+
