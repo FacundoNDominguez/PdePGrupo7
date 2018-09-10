@@ -1,23 +1,19 @@
 object rolando{
 	
-	var hechizo 
-	var valorBase = 1
+	var property hechizo 
+	var property valorBase = 1
 	var oscuridad = 5
-	var objetos = []
+	var property objetos = []
 	
 	method hechizoNuevo(nuevoHechizo){
 		hechizo = nuevoHechizo
 	}
 	
-	method nivelHechiceria() = self.valorBase() * self.hechizoFavorito().poder() + self.valorOscuro()
-	
-	method valorBase() = valorBase
-	
-	method hechizoFavorito() = hechizo
+	method nivelHechiceria() = self.valorBase() * self.hechizo().poder() + self.valorOscuro()
 	
 	method valorOscuro() = oscuridad
 	
-	method seCreePoderoso() = self.hechizoFavorito().esPoderoso()
+	method seCreePoderoso() = self.hechizo().esPoderoso()
 	
 	method eclipse(){
 		oscuridad = oscuridad * 2
@@ -27,12 +23,20 @@ object rolando{
 		self.objetos().add(objeto)
 	}
 	
-	method objetos() = objetos
+	method quitarAtefactos() = self.objetos().clear()
 	
 	method habilidadLucha() = self.valorBase() + self.objetos().sum({objeto => objeto.unidadesDeLucha()})
+
+	method masGuerreroQueHechizero() = self.habilidadLucha() > self.nivelHechiceria()
 }
 
-object espectroMalefico{
+class Hechizo{
+	method poder()
+	
+	method esPoderoso() = self.poder() > 15
+}
+
+object espectroMalefico inherits Hechizo{
 	var nombre = "Espectro Malefico"
 	
 	method nombre() = nombre
@@ -41,16 +45,15 @@ object espectroMalefico{
 		nombre = nuevoNombre
 	}
 	
-	method poder() = self.nombre().size()
+	override method poder() = self.nombre().size()
 	
-	method esPoderoso() = self.poder() > 15
 }
 
-object basico{
-	method poder() = 10
+object basico inherits Hechizo{
+	override method poder() = 10
 	
-	method esPoderoso() = self.poder() > 15
 }
+
 
 
 object espadaDelDestino{
@@ -70,13 +73,50 @@ object collarDivino{
 }
 
 object mascaraOscura{
-	var portador
+	var property portador
+
+	method unidadesDeLucha() = 4.max(self.portador().valorOscuro()/2)
+}
+
+
+
+
+
+object armadura{
+	var property refuerzo
 	
-	method portador() = portador
+	method unidadesDeLucha() = 2 + self.refuerzo().unidadesDeRefuerzo()
+}
+
+object cotaDeMalla{
+	method unidadesDeRefuerzo() = 1
+}
+
+object bendicion{
+	var property portador
 	
-	method portador(nuevoPortador){
-		portador = nuevoPortador
+	method unidadesDeRefuerzo() = self.portador().nivelHechiceria()
+}
+
+object hechizoDeEncanto{
+	var property hechizo
+	
+	method unidadesDeRefuerzo() = self.hechizo().poder()
+}
+
+
+object espejo{
+	var property portador
+	
+	method unidadesDeLucha() = self.portador().objetos().max({objeto=> objeto.unidadesDeLucha()})
+}
+
+object libroDeHechizos{
+	var property hechizos
+	
+	method agregarHechizo(unHechizo){
+		self.hechizos().add(unHechizo)
 	}
 	
-	method unidadesDeLucha() = 4.max(self.portador().valorOscuro()/2)
+	method unidadesDeLucha() = self.hechizos().filter({hechizo => hechizo.esPoderoso()}).sum({hechizo => hechizo.poder()})
 }
