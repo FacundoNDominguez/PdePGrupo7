@@ -1,9 +1,25 @@
+import rolando.*
 
-describe "group of tests" {
+describe "Test punto2 : Lucha" {
 
-	test "testX" {
+	fixture {
+		
+		rolando.agregaObjeto([espadaDelDestino, collarDivino, mascaraOscura])
+		
+		collarDivino.perlas(5)
+	}
+	
+	
+	test "Eliminar todos los artefactos de rolando y su valor de lucha es 1" {
+		
+		rolando.quitarArtefactos()
 
-		assert.that(true)
+		assert.equals(rolando.habilidadLucha(), 1)
 
+	}
+	
+	test "El poder de lucha de rolando con todos sus artefactos es igual a 13"{
+		
+		assert.equals(rolando.habilidadLucha(), 13)
 	}
 }

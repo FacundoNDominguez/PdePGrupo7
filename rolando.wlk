@@ -19,11 +19,11 @@ object rolando{
 		oscuridad = oscuridad * 2
 	}
 	
-	method agregarObjeto(objeto){
+	method agregaObjeto(objeto){
 		self.objetos().add(objeto)
 	}
 	
-	method quitarAtefactos() = self.objetos().clear()
+	method quitarArtefactos() = self.objetos().clear()
 	
 	method habilidadLucha() = self.valorBase() + self.objetos().sum({objeto => objeto.unidadesDeLucha()})
 
@@ -79,9 +79,6 @@ object mascaraOscura{
 }
 
 
-
-
-
 object armadura{
 	var property refuerzo
 	
@@ -112,7 +109,7 @@ object espejo{
 }
 
 object libroDeHechizos{
-	var property hechizos
+	var property hechizos = []
 	
 	method agregarHechizo(unHechizo){
 		self.hechizos().add(unHechizo)
